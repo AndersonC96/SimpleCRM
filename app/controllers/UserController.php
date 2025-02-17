@@ -1,10 +1,10 @@
 <?php
     class UserController {
         /**
-         * Construtor: Verifica se o usuário está autenticado.
+        * Construtor: Verifica se o usuário está autenticado.
         * Caso não esteja, redireciona para a página de login.
         */
-            public function __construct() {
+        public function __construct() {
             if (session_status() == PHP_SESSION_NONE) {
                 session_start();
             }
@@ -17,28 +17,20 @@
         * Exibe o painel do usuário com suas campanhas e outras informações.
         */
         public function dashboard() {
-            // Inicia a sessão, se ainda não estiver iniciada
-            if (session_status() == PHP_SESSION_NONE) {
-                session_start();
-            }
-            // Verifica se o usuário está autenticado
-            if (!isset($_SESSION['user_id'])) {
-                header("Location: index.php?url=auth/login");
-                exit;
-            }
-            // Inclui o modelo para buscar campanhas (se o usuário tiver campanhas associadas)
+            // O usuário já foi verificado no construtor, não é necessário repetir aqui.
+            // Inclui o modelo de Campaign para obter as campanhas.
             require_once 'app/models/Campaign.php';
             try {
-                // Busca as campanhas do usuário utilizando o ID armazenado na sessão
-                $campaigns = Campaign::getUserCampaigns($_SESSION['user_id']);
+                // Utiliza o método getAll() para buscar todas as campanhas.
+                // Caso no futuro você deseje filtrar campanhas por usuário, implemente getUserCampaigns().
+                $campaigns = Campaign::getAll();
             } catch (Exception $e) {
-                // Em caso de erro na busca, armazena uma mensagem de erro e define um array vazio
                 $_SESSION['errors'][] = 'Erro ao obter as campanhas: ' . $e->getMessage();
                 $campaigns = [];
             }
-            // As variáveis, como $campaigns, ficarão disponíveis na view
+            // As variáveis, como $campaigns, ficarão disponíveis na view.
             require 'app/views/user/dashboard.php';
-            }
+        }
         /**
         * Exibe o calendário para agendamento de mensagens e processa o agendamento.
         */
@@ -92,13 +84,13 @@
             require 'app/views/user/schedule.php';
         }
         /**
-         * Exibe a interface para criação/edição dos templates de mensagem e processa o salvamento.
+        * Exibe a interface para criação/edição dos templates de mensagem e processa o salvamento.
         */
         public function templates() {
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $errors = [];
                 // Obtém e sanitiza os dados do formulário de template
-                $templateName = isset($_POST['template_name']) ? trim($_POST['template_name']) : '';
+                $templateName    = isset($_POST['template_name']) ? trim($_POST['template_name']) : '';
                 $templateContent = isset($_POST['template_content']) ? trim($_POST['template_content']) : '';
                 // Valida os campos obrigatórios
                 if (empty($templateName)) {
