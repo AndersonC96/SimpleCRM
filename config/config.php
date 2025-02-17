@@ -24,7 +24,8 @@
     $dotenv = Dotenv\Dotenv::createImmutable($envPath);
     $dotenv->load();
     // Lista de variáveis essenciais que devem estar definidas no .env
-    $required_env_vars = ['DB_HOST', 'DB_NAME', 'DB_USER', 'DB_PASS', 'BASE_URL'];
+    //$required_env_vars = ['DB_HOST', 'DB_NAME', 'DB_USER', 'DB_PASS', 'BASE_URL'];
+    $required_env_vars = ['DB_HOST', 'DB_NAME', 'DB_USER', 'BASE_URL'];
     // Valida se todas as variáveis essenciais estão definidas e não estão vazias
     foreach ($required_env_vars as $var) {
         if (empty($_ENV[$var])) {
