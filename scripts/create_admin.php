@@ -1,8 +1,9 @@
 <?php
     // Carrega as configurações e o autoload (se estiver usando Composer)
-    require_once 'config/config.php';
+    // Usando __DIR__ para obter o caminho absoluto do diretório atual e voltar um nível
+    require_once __DIR__ . '/../config/config.php';
     // Inclui o modelo User
-    require_once 'app/models/User.php';
+    require_once __DIR__ . '/../app/models/User.php';
     // Inicia a sessão, se necessário
     if (session_status() == PHP_SESSION_NONE) {
         session_start();
