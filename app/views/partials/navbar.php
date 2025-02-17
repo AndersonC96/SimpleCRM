@@ -1,10 +1,8 @@
 <?php
-// app/views/partials/navbar.php
-
-// Inicia a sessão, se ainda não estiver iniciada
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+    // Inicia a sessão, se ainda não estiver iniciada
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
 ?>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container-fluid">
@@ -28,7 +26,6 @@ if (session_status() === PHP_SESSION_NONE) {
         <li class="nav-item">
           <a class="nav-link" href="index.php?url=home/contact">Contato</a>
         </li>
-        
         <?php if (isset($_SESSION['user_id'])): ?>
           <!-- Painel do Usuário -->
           <li class="nav-item">
@@ -46,12 +43,10 @@ if (session_status() === PHP_SESSION_NONE) {
               <li><a class="dropdown-item" href="index.php?url=form/delete">Remover Formulário</a></li>
             </ul>
           </li>
-
           <!-- Agendamento de Mensagens -->
           <li class="nav-item">
             <a class="nav-link" href="index.php?url=user/schedule">Agendar Mensagens</a>
           </li>
-          
           <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
             <!-- Menu Administrativo -->
             <li class="nav-item dropdown">
