@@ -1,40 +1,28 @@
 <?php
+    // Inclui a classe Database para garantir que a conexão seja possível
+    require_once __DIR__ . '/../helpers/Database.php';
     class User {
-        /**
-         * Autentica o usuário com base no username e senha.
-        * Retorna os dados do usuário (array associativo) se autenticado ou false em caso de falha.
-        */
         public static function authenticate($username, $password) {
-            // Validação básica dos parâmetros
             if (empty($username) || empty($password)) {
                 return false;
             }
-            // Obtém a conexão com o banco de dados
             $db = Database::getConnection();
-            // Prepara a consulta para evitar injeção de SQL
             $stmt = $db->prepare("SELECT * FROM users WHERE username = :username LIMIT 1");
             $stmt->bindParam(':username', $username, PDO::PARAM_STR);
             $stmt->execute();
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
-            // Verifica se o usuário existe e se a senha informada confere com o hash armazenado
             if ($user && password_verify($password, $user['password'])) {
                 return $user;
             }
             return false;
         }
-        /**
-         * Cria um novo usuário.
-        * Retorna o ID do usuário criado ou false em caso de erro.
-        */
         public static function create($username, $email, $passwordHash) {
-            // Validação dos parâmetros
             if (empty($username) || empty($email) || empty($passwordHash)) {
                 return false;
             }
             if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 return false;
             }
-            // Verifica se o usuário já existe
             if (self::exists($username)) {
                 return false;
             }
@@ -48,13 +36,7 @@
             }
             return false;
         }
-        /**
-         * Atualiza os dados do usuário.
-        * Se $passwordHash for null, a senha não será alterada.
-        * Retorna true se atualizado com sucesso, false caso contrário.
-        */
         public static function update($userId, $username, $email, $passwordHash = null) {
-            // Validação dos parâmetros
             if (empty($userId) || empty($username) || empty($email)) {
                 return false;
             }
@@ -73,10 +55,6 @@
             $stmt->bindParam(':id', $userId, PDO::PARAM_INT);
             return $stmt->execute();
         }
-        /**
-         * Exclui o usuário identificado por $userId.
-        * Retorna true em caso de sucesso ou false se ocorrer erro.
-        */
         public static function delete($userId) {
             if (empty($userId) || intval($userId) <= 0) {
                 return false;
@@ -86,10 +64,6 @@
             $stmt->bindParam(':id', $userId, PDO::PARAM_INT);
             return $stmt->execute();
         }
-        /**
-         * Verifica se um usuário com o mesmo username já existe.
-        * Retorna true se existir, false caso contrário.
-        */
         public static function exists($username) {
             if (empty($username)) {
                 return false;
@@ -100,10 +74,6 @@
             $stmt->execute();
             return $stmt->fetchColumn() > 0;
         }
-        /**
-         * Busca um usuário pelo email.
-        * Retorna os dados do usuário (array associativo) ou false se não encontrado.
-        */
         public static function findByEmail($email) {
             if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 return false;
@@ -115,10 +85,6 @@
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
             return $user ? $user : false;
         }
-        /**
-         * Armazena um token de recuperação para o usuário.
-        * Retorna true se atualizado com sucesso, false caso contrário.
-        */
         public static function storeResetToken($userId, $token) {
             if (empty($userId) || empty($token)) {
                 return false;
