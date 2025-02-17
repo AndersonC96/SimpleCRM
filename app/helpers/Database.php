@@ -17,14 +17,24 @@
         */
         public static function getConnection() {
             if (self::$connection === null) {
-                // Configurações do banco de dados - ajuste conforme seu ambiente
-                $host     = 'localhost';
-                $dbname   = 'nome_do_banco';
-                $username = 'usuario';
-                $password = 'senha';
+                // Carrega as variáveis de ambiente utilizando a biblioteca vlucas/phpdotenv
+                // Certifique-se de ter instalado a biblioteca via Composer:
+                // composer require vlucas/phpdotenv
+                $envPath = __DIR__ . '/../../';
+                if (file_exists($envPath . '.env')) {
+                    $dotenv = Dotenv\Dotenv::createImmutable($envPath);
+                    $dotenv->load();
+                } else {
+                    throw new Exception("Arquivo .env não encontrado.");
+                }
+                // Recupera as configurações do banco de dados a partir das variáveis de ambiente
+                $host     = $_ENV['DB_HOST'] ?? null;
+                $dbname   = $_ENV['DB_NAME'] ?? null;
+                $username = $_ENV['DB_USER'] ?? null;
+                $password = $_ENV['DB_PASS'] ?? null;
                 // Valida os parâmetros essenciais
                 if (empty($host) || empty($dbname) || empty($username)) {
-                    throw new Exception("Parâmetros de conexão inválidos. Verifique host, dbname e username.");
+                    throw new Exception("Parâmetros de conexão inválidos. Verifique DB_HOST, DB_NAME e DB_USER no arquivo .env.");
                 }
                 // Cria a DSN (Data Source Name) com charset utf8mb4
                 $dsn = "mysql:host={$host};dbname={$dbname};charset=utf8mb4";
