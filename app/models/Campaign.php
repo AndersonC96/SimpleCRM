@@ -1,9 +1,11 @@
 <?php
+    // Carrega a classe Database para estabelecer a conexão com o banco de dados
+    require_once __DIR__ . '/../helpers/Database.php';
     class Campaign {
         /**
-         * Retorna todas as campanhas/pesquisas.
+        * Retorna todas as campanhas/pesquisas.
         *
-        * @return array Array de campanhas ou um array vazio em caso de falha.
+        * @return array Array de campanhas ou um array vazio em caso de erro.
         */
         public static function getAll() {
             try {
@@ -11,12 +13,12 @@
                 $stmt = $db->query("SELECT * FROM campaigns");
                 return $stmt->fetchAll(PDO::FETCH_ASSOC);
             } catch (Exception $e) {
-                // Aqui você pode logar o erro, se necessário.
+                // Opcional: log do erro
                 return [];
             }
         }
         /**
-         * Cria uma nova campanha.
+        * Cria uma nova campanha.
         *
         * @param string $campaignName Nome da campanha.
         * @param string $startDate    Data de início no formato YYYY-MM-DD.
@@ -58,12 +60,12 @@
                     ':end_date'   => $endDate
                 ]);
             } catch (Exception $e) {
-                // Aqui você pode logar o erro, se necessário.
+                // Opcional: log do erro
                 return false;
             }
         }
         /**
-         * Atualiza uma campanha existente.
+        * Atualiza uma campanha existente.
         *
         * @param int    $campaignId   ID da campanha.
         * @param string $campaignName Nome da campanha.
@@ -106,12 +108,12 @@
                     ':id'         => $campaignId
                 ]);
             } catch (Exception $e) {
-                // Aqui você pode logar o erro, se necessário.
+                // Opcional: log do erro
                 return false;
             }
         }
         /**
-         * Exclui uma campanha.
+        * Exclui uma campanha.
         *
         * @param int $campaignId ID da campanha a ser excluída.
         * @return bool Retorna true se a campanha for excluída com sucesso, false em caso de erro.
@@ -125,12 +127,12 @@
                 $stmt = $db->prepare("DELETE FROM campaigns WHERE id = :id");
                 return $stmt->execute([':id' => $campaignId]);
             } catch (Exception $e) {
-                // Aqui você pode logar o erro, se necessário.
+                // Opcional: log do erro
                 return false;
             }
         }
         /**
-         * Encontra uma campanha pelo ID.
+        * Encontra uma campanha pelo ID.
         *
         * @param int $campaignId ID da campanha a ser buscada.
         * @return array|false Retorna um array associativo com os dados da campanha se encontrada, ou false caso contrário.
@@ -146,7 +148,7 @@
                 $campaign = $stmt->fetch(PDO::FETCH_ASSOC);
                 return $campaign ? $campaign : false;
             } catch (Exception $e) {
-                // Aqui você pode logar o erro, se necessário.
+                // Opcional: log do erro
                 return false;
             }
         }
