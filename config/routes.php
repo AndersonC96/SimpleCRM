@@ -8,10 +8,11 @@
     // Exemplo de mapeamento estático para algumas rotas específicas.
     // Você pode adicionar quantas rotas quiser nesse array.
     $routes = [
-        'auth/login'       => ['controller' => 'AuthController', 'action' => 'login'],
-        'auth/logout'      => ['controller' => 'AuthController', 'action' => 'logout'],
-        'admin/dashboard'  => ['controller' => 'AdminController', 'action' => 'dashboard'],
-        'user/dashboard'   => ['controller' => 'UserController', 'action' => 'dashboard'],
+        'auth/login'        => ['controller' => 'AuthController', 'action' => 'login'],
+        'auth/logout'       => ['controller' => 'AuthController', 'action' => 'logout'],
+        'admin/dashboard'   => ['controller' => 'AdminController', 'action' => 'dashboard'],
+        'user/dashboard'    => ['controller' => 'UserController', 'action' => 'dashboard'],
+        'form/create'       => ['controller' => 'FormController', 'action' => 'create'],
         // ...
     ];
     /**
