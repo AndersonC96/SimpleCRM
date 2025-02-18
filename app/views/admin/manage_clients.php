@@ -1,26 +1,21 @@
 <?php
-    // Inicia a sessão, se ainda não estiver iniciada
     if (session_status() == PHP_SESSION_NONE) {
         session_start();
     }
-    // Define o título da página para uso no header
     $title = "Gerenciamento de Clientes - Administrador";
-    // Inclui os arquivos parciais do layout
     require 'app/views/partials/header.php';
     require 'app/views/partials/navbar.php';
 ?>
 <div class="container mt-5">
     <h1>Gerenciamento de Clientes</h1>
-    <!-- Exibe mensagens de erro, se existirem -->
     <?php if (isset($_SESSION['errors']) && !empty($_SESSION['errors'])): ?>
         <div class="alert alert-danger">
-            <?php foreach ($_SESSION['errors'] as $error): ?>
+            <?php foreach($_SESSION['errors'] as $error): ?>
                 <p><?= htmlspecialchars($error) ?></p>
-            <?php endforeach; 
-            unset($_SESSION['errors']); ?>
+            <?php endforeach; unset($_SESSION['errors']); ?>
         </div>
     <?php endif; ?>
-    <!-- Exibe mensagem de sucesso, se existir -->
+
     <?php if (isset($_SESSION['success_message'])): ?>
         <div class="alert alert-success">
             <p><?= htmlspecialchars($_SESSION['success_message']) ?></p>
@@ -29,15 +24,15 @@
     <?php endif; ?>
     <!-- Formulário para criar novo cliente -->
     <h2>Criar Novo Cliente</h2>
-    <form action="index.php?url=admin/manage_clients" method="POST" novalidate class="mb-4">
+    <form action="index.php?url=admin/manage_clients" method="POST" novalidate>
         <input type="hidden" name="action" value="create">
         <div class="mb-3">
             <label for="client_name" class="form-label">Nome do Cliente</label>
-            <input type="text" name="client_name" id="client_name" class="form-control" placeholder="Digite o nome do cliente" required>
+            <input type="text" name="client_name" id="client_name" class="form-control" required>
         </div>
         <div class="mb-3">
             <label for="client_contact" class="form-label">Contato do Cliente</label>
-            <input type="text" name="client_contact" id="client_contact" class="form-control" placeholder="Digite o contato do cliente" required>
+            <input type="text" name="client_contact" id="client_contact" class="form-control" required>
         </div>
         <button type="submit" class="btn btn-primary">Criar Cliente</button>
     </form>
