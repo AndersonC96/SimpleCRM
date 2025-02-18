@@ -1,6 +1,6 @@
 <?php
-    // Inicia a sessão, se ainda não estiver iniciada
-    if (session_status() == PHP_SESSION_NONE) {
+    // Inicia a sessão, se necessário
+    if (session_status() === PHP_SESSION_NONE) {
         session_start();
     }
     // Define o título da página para uso no header
@@ -16,7 +16,7 @@
         <div class="alert alert-danger">
             <?php foreach ($_SESSION['errors'] as $error): ?>
                 <p><?= htmlspecialchars($error) ?></p>
-            <?php endforeach; 
+            <?php endforeach;
                   unset($_SESSION['errors']); ?>
         </div>
     <?php endif; ?>
@@ -31,7 +31,7 @@
     <div class="mb-3">
         <a href="index.php?url=form/create" class="btn btn-primary">Criar Novo Formulário</a>
     </div>
-    <!-- Verifica se a variável $forms está definida e não está vazia -->
+    <!-- Lista de formulários -->
     <?php if (isset($forms) && is_array($forms) && !empty($forms)): ?>
         <table class="table table-striped">
             <thead>
@@ -50,12 +50,9 @@
                         <td><?= htmlspecialchars($form['content']) ?></td>
                         <td>
                             <a href="index.php?url=form/edit/<?= htmlspecialchars($form['id']) ?>" class="btn btn-sm btn-warning">Editar</a>
-                            <form action="index.php?url=form/delete" method="POST" style="display:inline-block;">
+                            <form action="index.php?url=form/delete/<?= htmlspecialchars($form['id']) ?>" method="POST" style="display:inline-block;">
                                 <input type="hidden" name="action" value="delete">
-                                <input type="hidden" name="form_id" value="<?= htmlspecialchars($form['id']) ?>">
-                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza que deseja excluir este formulário?');">
-                                    Excluir
-                                </button>
+                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza que deseja excluir este formulário?');">Excluir</button>
                             </form>
                         </td>
                     </tr>
