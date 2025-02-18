@@ -1,192 +1,209 @@
 <?php
+    require_once __DIR__ . '/../models/User.php';
     class AuthController {
         /**
-         * Exibe o formulário de login e processa a autenticação do usuário.
+        * Exibe o formulário de login e processa a autenticação.
         */
         public function login() {
-            // Verifica se o formulário foi submetido via POST
+            if (session_status() == PHP_SESSION_NONE) {
+                session_start();
+            }
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                // Sanitiza e obtém os dados enviados
-                $username = isset($_POST['username']) ? trim(filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING)) : '';
-                $password = isset($_POST['password']) ? trim(filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING)) : '';
+                $username = isset($_POST['username']) ? trim($_POST['username']) : '';
+                $password = isset($_POST['password']) ? trim($_POST['password']) : '';
                 $errors = [];
-                // Validação: Verifica se os campos estão preenchidos
                 if (empty($username)) {
-                    $errors[] = 'O campo de usuário é obrigatório.';
+                    $errors[] = "O campo usuário é obrigatório.";
                 }
                 if (empty($password)) {
-                    $errors[] = 'O campo de senha é obrigatório.';
+                    $errors[] = "O campo senha é obrigatório.";
                 }
-                // Se houver erros, retorna para a view com as mensagens
                 if (!empty($errors)) {
-                    // A view pode acessar o array $errors para exibir as mensagens
-                    require 'app/views/auth/login.php';
-                    return;
+                    $_SESSION['errors'] = $errors;
+                    header("Location: index.php?url=auth/login");
+                    exit;
                 }
-                // Inclui o modelo do usuário para realizar a autenticação
-                require_once 'app/models/User.php';
-                // Tenta autenticar o usuário (o método authenticate deve implementar o acesso ao BD)
                 $user = User::authenticate($username, $password);
                 if ($user) {
-                    // Autenticação bem-sucedida: inicia a sessão com os dados do usuário
                     $_SESSION['user_id'] = $user['id'];
                     $_SESSION['username'] = $user['username'];
                     $_SESSION['role'] = $user['role'];
-                    // Redireciona para o painel do usuário ou dashboard
                     header("Location: index.php?url=user/dashboard");
                     exit;
                 } else {
-                    // Se a autenticação falhar, adiciona mensagem de erro
-                    $errors[] = 'Usuário ou senha inválidos.';
-                    require 'app/views/auth/login.php';
-                    return;
+                    $_SESSION['errors'][] = "Usuário ou senha inválidos.";
+                    header("Location: index.php?url=auth/login");
+                    exit;
                 }
-            } else {
-                // Se não for POST, exibe o formulário de login
-                require 'app/views/auth/login.php';
             }
+            require 'app/views/auth/login.php';
         }
         /**
-         * Exibe o formulário de registro e processa a criação de um novo usuário.
+        * Exibe o formulário de registro e cria um novo usuário.
         */
         public function register() {
+            if (session_status() == PHP_SESSION_NONE) {
+                session_start();
+            }
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                // Sanitiza e obtém os dados do formulário
-                $username = isset($_POST['username']) ? trim(filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING)) : '';
-                $password = isset($_POST['password']) ? trim(filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING)) : '';
-                $confirm_password = isset($_POST['confirm_password']) ? trim(filter_input(INPUT_POST, 'confirm_password', FILTER_SANITIZE_STRING)) : '';
+                $username = isset($_POST['username']) ? trim($_POST['username']) : '';
+                $email = isset($_POST['email']) ? trim($_POST['email']) : '';
+                $password = isset($_POST['password']) ? trim($_POST['password']) : '';
+                $confirm_password = isset($_POST['confirm_password']) ? trim($_POST['confirm_password']) : '';
                 $errors = [];
-                // Validações básicas
                 if (empty($username)) {
-                    $errors[] = 'O campo de usuário é obrigatório.';
+                    $errors[] = "O campo usuário é obrigatório.";
+                }
+                if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    $errors[] = "Email inválido.";
                 }
                 if (empty($password)) {
-                    $errors[] = 'O campo de senha é obrigatório.';
-                }
-                if (empty($confirm_password)) {
-                    $errors[] = 'O campo de confirmação de senha é obrigatório.';
+                    $errors[] = "O campo senha é obrigatório.";
                 }
                 if ($password !== $confirm_password) {
-                    $errors[] = 'As senhas não conferem.';
+                    $errors[] = "As senhas não conferem.";
                 }
                 if (strlen($password) < 6) {
-                    $errors[] = 'A senha deve ter no mínimo 6 caracteres.';
+                    $errors[] = "A senha deve ter pelo menos 6 caracteres.";
                 }
-                // Se houver erros, exibe novamente o formulário com mensagens
                 if (!empty($errors)) {
-                    require 'app/views/auth/register.php';
-                    return;
+                    $_SESSION['errors'] = $errors;
+                    header("Location: index.php?url=auth/register");
+                    exit;
                 }
-                // Inclui o modelo do usuário para processar o registro
-                require_once 'app/models/User.php';
-                // Verifica se o usuário já está cadastrado
-                if (User::exists($username)) {
-                    $errors[] = 'Este usuário já está cadastrado.';
-                    require 'app/views/auth/register.php';
-                    return;
-                }
-                // Criptografa a senha antes de salvar
-                $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-                // Cria o usuário no banco de dados (o método create deve retornar o ID do novo usuário ou false em caso de falha)
-                $newUserId = User::create($username, $hashedPassword);
-                if ($newUserId) {
-                    // Registro efetuado com sucesso: define mensagem de sucesso e redireciona para a tela de login
-                    $_SESSION['success_message'] = 'Registro realizado com sucesso. Por favor, faça login.';
+                $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+                $id = User::create($username, $email, $passwordHash, 'user');
+                if ($id) {
+                    $_SESSION['success_message'] = "Registro efetuado com sucesso. Faça login.";
                     header("Location: index.php?url=auth/login");
                     exit;
                 } else {
-                    $errors[] = 'Erro ao registrar usuário. Tente novamente.';
-                    require 'app/views/auth/register.php';
-                    return;
+                    $_SESSION['errors'][] = "Falha ao registrar usuário.";
+                    header("Location: index.php?url=auth/register");
+                    exit;
                 }
-            } else {
-                // Exibe o formulário de registro se não for POST
-                require 'app/views/auth/register.php';
             }
+            require 'app/views/auth/register.php';
         }
         /**
-         * Exibe o formulário de recuperação de senha, processa a geração do token e envia o link de redefinição.
+        * Exibe o formulário para recuperação de senha e envia um e-mail com o link de redefinição.
         */
         public function forgot_password() {
+            if (session_status() == PHP_SESSION_NONE) {
+                session_start();
+            }
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                // Obtém e sanitiza o email
-                $email = isset($_POST['email']) ? trim(filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL)) : '';
+                $email = isset($_POST['email']) ? trim($_POST['email']) : '';
                 $errors = [];
-                // Valida o campo de email
                 if (empty($email)) {
-                    $errors[] = 'O campo de email é obrigatório.';
+                    $errors[] = "O campo de email é obrigatório.";
                 } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                    $errors[] = 'Formato de email inválido.';
+                    $errors[] = "Formato de email inválido.";
                 }
-            // Se houver erros de validação, exibe o formulário novamente
                 if (!empty($errors)) {
-                    require 'app/views/auth/forgot_password.php';
-                    return;
+                    $_SESSION['errors'] = $errors;
+                    header("Location: index.php?url=auth/forgot_password");
+                    exit;
                 }
-                // Inclui o modelo do usuário para buscar o registro pelo email
-                require_once 'app/models/User.php';
-                // Tenta localizar o usuário pelo email informado
                 $user = User::findByEmail($email);
                 if ($user) {
-                    try {
-                        // Gera um token seguro para recuperação de senha
-                        $token = bin2hex(random_bytes(16));
-                    } catch (Exception $e) {
-                        $errors[] = 'Erro ao gerar token seguro.';
-                        require 'app/views/auth/forgot_password.php';
-                        return;
-                    }
-                    // Armazena o token no banco de dados (implemente o método storeResetToken em User.php)
+                    // Gera token e armazena
+                    $token = bin2hex(random_bytes(16));
                     if (User::storeResetToken($user['id'], $token)) {
-                        // Envio de email utilizando PHPMailer
-                        require 'vendor/autoload.php';
-                        // Cria uma instância do PHPMailer
-                        $mail = new PHPMailer\PHPMailer\PHPMailer(true);
-                        try {
-                            // Configurações do servidor SMTP
-                            $mail->isSMTP();
-                            $mail->Host = 'smtp.seudominio.com';       // Servidor SMTP ainda não escolhido
-                            $mail->SMTPAuth = true;
-                            $mail->Username = 'seu-email@seudominio.com';    // Usuário SMTP
-                            $mail->Password = 'sua-senha';                     // Senha SMTP
-                            $mail->SMTPSecure = PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
-                            $mail->Port = 587;                           // Porta SMTP (geralmente 587 para TLS)
-                            // Define o remetente e o destinatário
-                            $mail->setFrom('seu-email@seudominio.com', 'Nome da Empresa');
-                            $mail->addAddress($user['email'], $user['username']);
-                            // Configura o conteúdo do email
-                            $mail->isHTML(true);
-                            $mail->Subject = 'Recuperação de Senha';
-                            // Cria o link para redefinir a senha
-                            $resetLink = "http://localhost/crm-satisfacao/?url=auth/reset_password&token=" . urlencode($token);
-                            $mail->Body = "Clique no link a seguir para redefinir sua senha: <a href='{$resetLink}'>{$resetLink}</a>";
-                            $mail->AltBody = "Clique no link a seguir para redefinir sua senha: {$resetLink}";
-                            // Envia o email
-                            $mail->send();
-                            // Define mensagem de sucesso e redireciona para a página de login
-                            $_SESSION['success_message'] = 'Um link de recuperação foi enviado para seu email.';
-                            header("Location: index.php?url=auth/login");
-                            exit;
-                        } catch (PHPMailer\PHPMailer\Exception $e) {
-                            $errors[] = 'Erro ao enviar email: ' . $mail->ErrorInfo;
+                        // Exemplo básico de envio de e-mail (substitua pela sua lógica de envio)
+                        $to = $user['email'];
+                        $subject = "Recuperação de Senha";
+                        $message = "Clique no link a seguir para redefinir sua senha: " . BASE_URL . "/index.php?url=auth/reset_password&token=" . urlencode($token);
+                        $headers = "From: no-reply@meuprojeto.com\r\n";
+                        if (mail($to, $subject, $message, $headers)) {
+                            $_SESSION['success_message'] = "Um link de recuperação foi enviado para seu email.";
+                        } else {
+                            $_SESSION['errors'][] = "Erro ao enviar o email de recuperação.";
                         }
+                        header("Location: index.php?url=auth/login");
+                        exit;
                     } else {
-                        $errors[] = 'Erro ao gerar token de recuperação. Tente novamente.';
+                        $_SESSION['errors'][] = "Erro ao gerar token de recuperação.";
+                        header("Location: index.php?url=auth/forgot_password");
+                        exit;
                     }
                 } else {
-                    $errors[] = 'Nenhum usuário encontrado com este email.';
+                    $_SESSION['errors'][] = "Nenhum usuário encontrado com esse email.";
+                    header("Location: index.php?url=auth/forgot_password");
+                    exit;
                 }
-                // Exibe novamente o formulário com os erros, se houver
-                require 'app/views/auth/forgot_password.php';
-            } else {
-                // Se não for uma requisição POST, apenas exibe o formulário de recuperação de senha
-                require 'app/views/auth/forgot_password.php';
             }
+            require 'app/views/auth/forgot_password.php';
         }
         /**
-         * Encerra a sessão do usuário e redireciona para a página de login.
+        * Processa a redefinição da senha.
+        */
+        public function reset_password() {
+            if (session_status() == PHP_SESSION_NONE) {
+                session_start();
+            }
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                $token = isset($_POST['token']) ? trim($_POST['token']) : '';
+                $password = isset($_POST['password']) ? trim($_POST['password']) : '';
+                $confirm_password = isset($_POST['confirm_password']) ? trim($_POST['confirm_password']) : '';
+                $errors = [];
+                if (empty($token)) {
+                    $errors[] = "Token inválido ou expirado.";
+                }
+                if (empty($password)) {
+                    $errors[] = "A nova senha é obrigatória.";
+                }
+                if ($password !== $confirm_password) {
+                    $errors[] = "As senhas não conferem.";
+                }
+                if (strlen($password) < 6) {
+                    $errors[] = "A senha deve ter no mínimo 6 caracteres.";
+                }
+                if (!empty($errors)) {
+                    $_SESSION['errors'] = $errors;
+                    // Mantenha o token na query string para que o usuário possa tentar novamente
+                    header("Location: index.php?url=auth/reset_password&token=" . urlencode($token));
+                    exit;
+                }
+                // Aqui podemos implementar a lógica de encontrar o usuário pelo token e atualizar a senha.
+                // Por exemplo:
+                // $user = User::findByResetToken($token);
+                // if ($user) {
+                //     // Atualiza a senha do usuário
+                //     $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+                //     $result = User::update($user['id'], $user['username'], $user['email'], $passwordHash);
+                //     if ($result) {
+                //         // Limpe o token e redirecione com sucesso
+                //         $_SESSION['success_message'] = "Senha redefinida com sucesso. Faça login.";
+                //         header("Location: index.php?url=auth/login");
+                //         exit;
+                //     } else {
+                //         $_SESSION['errors'][] = "Erro ao atualizar a senha.";
+                //     }
+                // } else {
+                //     $_SESSION['errors'][] = "Token inválido ou expirado.";
+                // }
+                // Se ocorrer erro, redirecione de volta
+                header("Location: index.php?url=auth/reset_password&token=" . urlencode($token));
+                exit;
+            } else {
+                // Para requisições GET, verifica se o token foi passado
+                $token = isset($_GET['token']) ? trim($_GET['token']) : '';
+                if (empty($token)) {
+                    $_SESSION['errors'][] = "Token inválido ou expirado.";
+                    header("Location: index.php?url=auth/forgot_password");
+                    exit;
+                }
+            }
+            require 'app/views/auth/reset_password.php';
+        }
+        /**
+        * Encerra a sessão do usuário e redireciona para a página de login.
         */
         public function logout() {
+            if (session_status() == PHP_SESSION_NONE) {
+                session_start();
+            }
             session_destroy();
             header("Location: index.php?url=auth/login");
             exit;
