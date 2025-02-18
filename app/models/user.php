@@ -2,6 +2,10 @@
     // Inclui a classe Database para garantir que a conexão seja possível
     require_once __DIR__ . '/../helpers/Database.php';
     class User {
+        /**
+        * Autentica o usuário com base no username e senha.
+        * Retorna os dados do usuário (array associativo) se autenticado, ou false.
+        */
         public static function authenticate($username, $password) {
             if (empty($username) || empty($password)) {
                 return false;
@@ -16,7 +20,11 @@
             }
             return false;
         }
-        public static function create($username, $email, $passwordHash) {
+        /**
+        * Cria um novo usuário.
+        * Retorna o ID do usuário criado ou false em caso de erro.
+        */
+        public static function create($username, $email, $passwordHash, $role = 'user') {
             if (empty($username) || empty($email) || empty($passwordHash)) {
                 return false;
             }
@@ -27,15 +35,21 @@
                 return false;
             }
             $db = Database::getConnection();
-            $stmt = $db->prepare("INSERT INTO users (username, email, password) VALUES (:username, :email, :password)");
+            $stmt = $db->prepare("INSERT INTO users (username, email, password, role, created_at) VALUES (:username, :email, :password, :role, NOW())");
             $stmt->bindParam(':username', $username, PDO::PARAM_STR);
             $stmt->bindParam(':email', $email, PDO::PARAM_STR);
             $stmt->bindParam(':password', $passwordHash, PDO::PARAM_STR);
+            $stmt->bindParam(':role', $role, PDO::PARAM_STR);
             if ($stmt->execute()) {
                 return $db->lastInsertId();
             }
             return false;
         }
+        /**
+        * Atualiza os dados do usuário.
+        * Se $passwordHash for null, a senha não será alterada.
+        * Retorna true se atualizado com sucesso, false caso contrário.
+        */
         public static function update($userId, $username, $email, $passwordHash = null) {
             if (empty($userId) || empty($username) || empty($email)) {
                 return false;
@@ -55,6 +69,10 @@
             $stmt->bindParam(':id', $userId, PDO::PARAM_INT);
             return $stmt->execute();
         }
+        /**
+        * Exclui o usuário identificado por $userId.
+        * Retorna true em caso de sucesso ou false se ocorrer erro.
+        */
         public static function delete($userId) {
             if (empty($userId) || intval($userId) <= 0) {
                 return false;
@@ -64,6 +82,10 @@
             $stmt->bindParam(':id', $userId, PDO::PARAM_INT);
             return $stmt->execute();
         }
+        /**
+        * Verifica se um usuário com o mesmo username já existe.
+        * Retorna true se existir, false caso contrário.
+        */
         public static function exists($username) {
             if (empty($username)) {
                 return false;
@@ -74,6 +96,10 @@
             $stmt->execute();
             return $stmt->fetchColumn() > 0;
         }
+        /**
+        * Busca um usuário pelo email.
+        * Retorna os dados do usuário (array associativo) ou false se não encontrado.
+        */
         public static function findByEmail($email) {
             if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 return false;
@@ -85,6 +111,10 @@
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
             return $user ? $user : false;
         }
+        /**
+        * Armazena um token de recuperação para o usuário.
+        * Retorna true se atualizado com sucesso, false caso contrário.
+        */
         public static function storeResetToken($userId, $token) {
             if (empty($userId) || empty($token)) {
                 return false;
