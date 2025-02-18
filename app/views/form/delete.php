@@ -1,6 +1,6 @@
 <?php
     // Inicia a sessão, se necessário
-    if (session_status() == PHP_SESSION_NONE) {
+    if (session_status() === PHP_SESSION_NONE) {
         session_start();
     }
     // Define o título da página para uso no header
@@ -21,9 +21,7 @@
     <!-- Formulário de confirmação para exclusão -->
     <form action="index.php?url=form/delete/<?= htmlspecialchars($form['id']) ?>" method="POST">
         <input type="hidden" name="action" value="delete">
-        <button type="submit" class="btn btn-danger" onclick="return confirm('Esta ação não pode ser desfeita. Confirma a exclusão?');">
-            Sim, excluir
-        </button>
+        <button type="submit" class="btn btn-danger" onclick="return confirm('Esta ação não pode ser desfeita. Confirma a exclusão?');">Sim, excluir</button>
         <a href="index.php?url=form/index" class="btn btn-secondary">Cancelar</a>
     </form>
 </div>
