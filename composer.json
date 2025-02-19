@@ -8,6 +8,7 @@
         "guzzlehttp/guzzle": "^7.9",
         "twilio/sdk": "^8.3",
         "monolog/monolog": "^3.8",
-        "respect/validation": "^2.4"
+        "respect/validation": "^2.4",
+        "nesbot/carbon": "^3.8"
     }
 }
