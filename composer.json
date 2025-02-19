@@ -8,6 +8,6 @@
         "guzzlehttp/guzzle": "^7.9",
         "twilio/sdk": "^8.3",
         "monolog/monolog": "^3.8",
-        "respect/validation": "*"
+        "respect/validation": "^2.4"
     }
 }
