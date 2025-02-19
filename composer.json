@@ -5,6 +5,7 @@
         "symfony/routing": "^7.2",
         "twig/twig": "^3.20",
         "illuminate/database": "^11.43",
-        "guzzlehttp/guzzle": "^7.9"
+        "guzzlehttp/guzzle": "^7.9",
+        "twilio/sdk": "^8.3"
     }
 }
