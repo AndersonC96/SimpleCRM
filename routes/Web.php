@@ -2,7 +2,6 @@
     use Tisim\SimpleCrm\Controllers\SurveyController;
     use Tisim\SimpleCrm\Controllers\InviteController;
     use Tisim\SimpleCrm\Controllers\AuthController;
-    // Captura rota limpa
     $uri = rtrim($_GET['url'] ?? '/', '/');
     switch ($uri) {
         case '':
