@@ -1,7 +1,7 @@
 <?php if (!empty($error)): ?>
     <div class="notification is-danger"><?= $error ?></div>
 <?php endif; ?>
-<form method="POST" action="login">
+<form method="POST" action="index.php?url=login">
     <div class="field">
         <label class="label">E-mail</label>
         <div class="control">
@@ -16,4 +16,4 @@
     </div>
     <button class="button is-primary">Entrar</button>
 </form>
-<p class="mt-3">Não tem conta? <a href="register">Cadastre-se</a></p>
+<p class="mt-3">Não tem conta? <a href="index.php?url=register">Cadastre-se</a></p>
