@@ -1,4 +1,4 @@
-<form method="POST" action="register">
+<form method="POST" action="index.php?url=register">
     <div class="field">
         <label class="label">Nome</label>
         <div class="control">
@@ -19,4 +19,4 @@
     </div>
     <button class="button is-success">Cadastrar</button>
 </form>
-<p class="mt-3">Já tem conta? <a href="login">Fazer login</a></p>
+<p class="mt-3">Já tem conta? <a href="index.php?url=login">Fazer login</a></p>
