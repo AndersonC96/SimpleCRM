@@ -1,4 +1,4 @@
-<a href="surveys/create" class="button is-primary mb-3">Nova Pesquisa</a>
+<a href="index.php?url=surveys/create" class="button is-primary mb-3">Nova Pesquisa</a>
 <table class="table is-fullwidth is-striped">
     <thead>
         <tr>
