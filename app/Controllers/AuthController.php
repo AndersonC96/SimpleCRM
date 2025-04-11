@@ -9,7 +9,7 @@
             $user = User::where('email', $_POST['email'])->first();
             if ($user && password_verify($_POST['password'], $user->password)) {
                 $_SESSION['user_id'] = $user->id;
-                $this->redirect('surveys');
+                $this->redirect('index.php?url=dashboard');
             } else {
                 $this->view('auth/login', ['error' => 'E-mail ou senha inválidos.']);
             }
@@ -24,7 +24,7 @@
             $user->password = password_hash($_POST['password'], PASSWORD_DEFAULT);
             $user->save();
             $_SESSION['user_id'] = $user->id;
-            $this->redirect('surveys');
+            $this->redirect('index.php?url=dashboard');
         }
         public function logout() {
             session_destroy();
