@@ -15,10 +15,12 @@
         	$survey->description = $_POST['description'];
         	$survey->save();
 	        // Gera popup com redirecionamento usando JS
-    	    echo "<script>
+    	    /*echo "<script>
         	    alert('Pesquisa criada com sucesso!');
             	window.location.href = 'index.php?url=surveys';
-        	</script>";
+        	</script>";*/
+			flash('Pesquisa criada com sucesso!', 'is-success');
+			$this->redirect('index.php?url=surveys');
     	}
 	    public function show($id) {
         	$survey = Survey::find($id);
