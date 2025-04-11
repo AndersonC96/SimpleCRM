@@ -39,6 +39,12 @@
         <section class="section">
             <div class="container">
                 <h1 class="title"><?= $title ?? 'SimpleCRM' ?></h1>
+                <?php if ($flash = flash()): ?>
+                <div class="notification <?= $flash['type'] ?>">
+                    <?= htmlspecialchars($flash['message']) ?>
+                    <button class="delete" onclick="this.parentElement.remove();"></button>
+                </div>
+                <?php endif; ?>
                 <hr>
                 <?php require $content; ?>
             </div>
