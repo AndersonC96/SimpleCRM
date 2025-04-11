@@ -45,6 +45,20 @@
                 echo "Método não permitido";
             }
             break;
+        case 'surveys/show':
+            if (isset($_GET['id'])) {
+                (new SurveyController)->show($_GET['id']);
+            } else {
+                echo "ID não informado";
+            }
+            break;
+        case 'surveys/delete':
+            if (isset($_GET['id'])) {
+                (new SurveyController)->delete($_GET['id']);
+            } else {
+                echo "ID não informado";
+            }
+            break;
         // ─── Envio de Convites ────────────────────────
         case 'invites/send':
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
