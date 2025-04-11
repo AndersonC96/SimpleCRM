@@ -24,5 +24,16 @@
 			$survey = Survey::find($id);
 			$survey?->delete();
 			$this->redirect('surveys');
-    		}
+    	}
+		public function store() {
+    		$survey = new Survey;
+    		$survey->title = $_POST['title'];
+    		$survey->description = $_POST['description'];
+    		$survey->save();
+		    // Gera popup com redirecionamento usando JS
+    		echo "<script>
+        		alert('Pesquisa criada com sucesso!');
+        		window.location.href = 'index.php?url=surveys';
+    		</script>";
+		}
 	}
