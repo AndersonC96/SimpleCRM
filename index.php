@@ -2,6 +2,7 @@
     session_start();
     require __DIR__ . '/vendor/autoload.php';
     require __DIR__ . '/config/database.php';
+    require __DIR__ . '/helpers.php';
     // Captura rota atual
     $uri = rtrim($_GET['url'] ?? '/', '/');
     // Rotas públicas (acesso sem login)
