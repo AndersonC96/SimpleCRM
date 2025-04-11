@@ -2,6 +2,7 @@
     use Tisim\SimpleCrm\Controllers\SurveyController;
     use Tisim\SimpleCrm\Controllers\InviteController;
     use Tisim\SimpleCrm\Controllers\AuthController;
+    use Tisim\SimpleCrm\Controllers\DashboardController;
     $uri = rtrim($_GET['url'] ?? '/', '/');
     switch ($uri) {
         case '':
@@ -25,6 +26,10 @@
             break;
         case 'logout':
             (new AuthController)->logout();
+            break;
+        // ─── Dashboard ────────────────────────────────
+        case 'dashboard':
+            (new DashboardController)->index();
             break;
         // ─── CRUD de Pesquisas ────────────────────────
         case 'surveys':
