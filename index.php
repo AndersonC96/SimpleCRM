@@ -3,6 +3,10 @@
     ini_set('display_errors', 1);
     ini_set('display_startup_errors', 1);
     error_reporting(E_ALL);
+    // Inicia sessão se ainda não estiver ativa
+    if (session_status() !== PHP_SESSION_ACTIVE) {
+        session_start();
+    }
     // Autoload do Composer
     require_once __DIR__ . '/vendor/autoload.php';
     // Carrega variáveis do .env
