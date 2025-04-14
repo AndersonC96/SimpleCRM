@@ -7,4 +7,10 @@
 </head>
 <body>
   <div class="container">
-    <?php include 'view/partials/navbar.php'; ?>
+    <?php
+      // Exibe a navbar somente se o usuário estiver logado
+      session_start();
+      if (isset($_SESSION['usuario'])) {
+        include 'view/partials/navbar.php';
+      }
+    ?>
