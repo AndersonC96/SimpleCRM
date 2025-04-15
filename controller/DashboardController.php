@@ -12,13 +12,15 @@
             /*View::render('dashboard/index', ['usuario' => $_SESSION['usuario']]);*/
             $representantes = RepresentanteRepository::listarComDadosNPS();
             $areas = RepresentanteRepository::listarAreas();
-            View::render('dashboard/index', compact('representantes', 'areas'));
             $resumo = EngajamentoRepository::obterResumo();
             $respostasSemana = EngajamentoRepository::respostasPorDia();
-            View::render('dashboard/index', [
+            View::render('dashboard/index', compact('representantes', 'areas'));
+            //$resumo = EngajamentoRepository::obterResumo();
+            //$respostasSemana = EngajamentoRepository::respostasPorDia();
+            /*View::render('dashboard/index', [
                 'resumo' => $resumo,
                 'respostasSemana' => $respostasSemana,
                 // + outras variáveis
-            ]);
+            ]);*/
         }
     }
