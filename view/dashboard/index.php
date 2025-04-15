@@ -36,6 +36,9 @@
     </div>
   </div>
 
+  <div class="box mt-5">
+  <h2 class="subtitle is-5">Representantes</h2>
+  
 <!-- Filtro + Ordenador -->
 <div class="field is-grouped is-justify-content-space-between mb-4">
   <div class="control">
@@ -57,10 +60,11 @@
          data-nota="<?= $r['nps'] ?>"
          data-nome="<?= $r['nome'] ?>"
          data-respostas="<?= $r['total_respostas'] ?>"
-         data-area="<?= $r['area_atuacao'] ?>">
+         data-area="<?= $r['area_atuacao'] ?>"
+         data-area="<?= $r['imagem_url'] ?>">
       <div class="box has-text-centered fade-in">
         <figure class="image is-96x96 is-inline-block mb-3">
-          <img class="is-rounded" src="public/img/avatar.jpg" alt="Avatar">
+          <img class="is-rounded" src="<?= $r['imagem_url'] ?>" alt="Avatar">
         </figure>
         <h3 class="title is-6"><?= $r['nome'] ?></h3>
         <span class="tag is-medium 
@@ -74,6 +78,7 @@
     </div>
   <?php endforeach; ?>
 </div>
+  </div>
 
 
   <!-- Representantes (mock básico por enquanto) -->
