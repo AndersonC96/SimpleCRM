@@ -93,7 +93,7 @@
     <h2 class="subtitle is-5">Engajamento</h2>
     <div class="columns">
       <!-- Barra dupla: Enviadas vs Respondidas -->
-      <div class="column is-half">
+      <!--<div class="column is-half">
         <div class="mb-4">
           <p class="mb-1">Mensagens enviadas: <strong>1.200</strong></p>
           <progress class="progress is-info" value="100" max="100">100%</progress>
@@ -111,11 +111,26 @@
             <progress class="progress is-warning is-small" value="280" max="400"></progress>
           </div>
         </div>
-      </div>
+      </div>-->
       <!-- Gráfico de linhas -->
-      <div class="column is-half">
+      <!--<div class="column is-half">
         <div id="engajamentoChart"></div>
-      </div>
+      </div>-->
+
+      <?php
+  $enviadas = $resumo['total']['total_enviados'] ?? 0;
+  $respondidas = $resumo['total']['total_respondidos'] ?? 0;
+  $taxa = $enviadas > 0 ? round(($respondidas / $enviadas) * 100, 1) : 0;
+?>
+<p class="mb-1">Mensagens enviadas: <strong><?= number_format($enviadas, 0, ',', '.') ?></strong></p>
+<progress class="progress is-info" value="100" max="100"></progress>
+
+<p class="mb-1">Mensagens respondidas: <strong><?= number_format($respondidas, 0, ',', '.') ?></strong></p>
+<progress class="progress is-success" value="<?= $taxa ?>" max="100"><?= $taxa ?>%</progress>
+
+<p class="is-size-7 has-text-grey mt-2">Taxa de conversão: <strong><?= $taxa ?>%</strong></p>
+
+
     </div>
   </div>
 </section>
