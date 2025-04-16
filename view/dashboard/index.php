@@ -25,27 +25,42 @@
       </label>
     </div>
   </div>
-  <div class="columns is-multiline">
-    <!-- Gráfico NPS semicircular -->
-    <div class="column is-half">
-      <div class="box">
-        <h2 class="subtitle is-6">NPS Corporativo</h2>
-        <div id="npsChart"></div>
+  <div class="columns is-multiline is-variable is-4">
+    <!-- Card NPS -->
+    <div class="column is-full-mobile is-one-third-desktop">
+      <div class="box has-text-centered is-flex is-flex-direction-column is-align-items-center is-justify-content-center" style="height: 260px;">
+        <h2 class="subtitle is-6"><b>NPS da empresa</b></h2>
+        <div id="npsChart" style="width: 100%; max-width: 150px;"></div>
+        <div class="mt-3">
+          <span class="tag is-medium <?= $mediaNPS >= 9 ? 'is-success' : ($mediaNPS >= 7 ? 'is-warning' : 'is-danger') ?>">
+            <?= $mediaNPS ?> / 10
+          </span>
+          <p class="is-size-7 mt-2">Classificação:
+            <strong>
+              <?= $mediaNPS <= 6 ? 'Detratores' : ($mediaNPS <= 8 ? 'Neutros' : 'Promotores') ?>
+            </strong>
+          </p>
+        </div>
       </div>
     </div>
-    <!-- Cards de comparativo -->
-    <div class="column is-one-quarter">
-      <div class="box has-text-centered">
-        <p class="heading">Variação Mensal</p>
-        <p class="title has-text-success">+12%</p>
-        <span class="icon"><i class="fas fa-arrow-up"></i></span>
+    <!-- Card Variação Mensal -->
+    <div class="column is-full-mobile is-one-third-desktop">
+      <div class="box has-text-centered is-flex is-flex-direction-column is-justify-content-center" style="height: 260px;">
+        <p class="heading"><b>Variação Mensal</b></p>
+        <p class="title has-text-<?= $variacao >= 0 ? 'success' : 'danger' ?>">
+          <?= number_format($variacao, 1) ?> <?= $variacao >= 0 ? '▲' : '▼' ?> pontos
+        </p>
+        <p class="is-size-7 mt-2">vs mês anterior</p>
       </div>
     </div>
-    <div class="column is-one-quarter">
-      <div class="box has-text-centered">
-        <p class="heading">Benchmark</p>
-        <p class="title">65</p>
-        <p class="subtitle is-7">Média do setor</p>
+    <!-- Card Benchmark -->
+    <div class="column is-full-mobile is-one-third-desktop">
+      <div class="box has-text-centered is-flex is-flex-direction-column is-justify-content-center" style="height: 260px;" data-tooltip="Média dos concorrentes do seu setor nos últimos 3 meses.">
+        <p class="heading"><b>Benchmark</b></p>
+        <p class="title"><?= $benchmarkFixo ?? '—' ?></p>
+        <p class="is-size-7">Média do setor</p>
+        <p class="is-size-7 mt-1">Posição: 12/20</p>
+        <p class="is-size-7 has-text-grey-light mt-1">Meta: 8.0 | Líder: 8.3</p>
       </div>
     </div>
   </div>
@@ -126,7 +141,7 @@
       blue: '#3273dc'
     };
   }
-  function renderNPSChart() {
+  /*function renderNPSChart() {
     const colors = getThemeColors();
     const valorNPS = <?= $mediaNPS ?>;
     new ApexCharts(document.querySelector("#npsChart"), {
@@ -165,7 +180,41 @@
       labels: ['NPS'],
       colors: [colors.green]
     }).render();
-  }
+  }*/
+
+  function renderNPSChart() {
+  const colors = getThemeColors();
+  const npsValue = <?= $mediaNPS ?>;
+  const percentage = (npsValue / 10) * 100;
+
+  new ApexCharts(document.querySelector("#npsChart"), {
+    chart: {
+      type: 'radialBar',
+      height: 250,
+      offsetY: -10,
+      background: colors.bg,
+      foreColor: colors.text
+    },
+    plotOptions: {
+      radialBar: {
+        startAngle: -90,
+        endAngle: 90,
+        hollow: { size: '70%' },
+        dataLabels: {
+          name: { show: false },
+          value: {
+            fontSize: '30px',
+            formatter: () => `${npsValue}`
+          }
+        }
+      }
+    },
+    series: [percentage],
+    colors: [colors.green]
+  }).render();
+}
+
+
   function renderEngajamentoChart() {
     const colors = getThemeColors();
     const respostaData = <?= json_encode(array_values($respostasSemana)) ?>;
