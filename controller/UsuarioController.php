@@ -36,9 +36,19 @@
             ]);
         }
 
-        public function create() {
+        /*public function create() {
             View::render('usuarios/create');
+        }*/
+
+        public function create() {
+            $csrf_token = bin2hex(random_bytes(32));
+            $_SESSION['csrf_token'] = $csrf_token;
+        
+            View::render('usuarios/create', [
+                'csrf_token' => $csrf_token
+            ]);
         }
+
         public function store() {
             $nome = trim($_POST['nome'] ?? '');
             $email = filter_var($_POST['email'] ?? '', FILTER_VALIDATE_EMAIL);
