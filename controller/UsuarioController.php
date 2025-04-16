@@ -11,11 +11,31 @@
             }
             $this->pdo = \App\Config\Database::connect();
         }
-        public function index() {
+        /*public function index() {
             $stmt = $this->pdo->query("SELECT id, nome, email, tipo, ativo FROM users ORDER BY nome");
             $usuarios = $stmt->fetchAll();
             View::render('usuarios/index', ['usuarios' => $usuarios]);
+        }*/
+
+        public function index() {
+            $stmt = $this->pdo->query("SELECT id, nome, email, tipo, ativo, criado_em FROM users ORDER BY nome");
+            $usuarios = $stmt->fetchAll();
+        
+            // Cards de resumo
+            $total = count($usuarios);
+            $ativos = count(array_filter($usuarios, fn($u) => $u['ativo']));
+            $recentes = count(array_filter($usuarios, fn($u) => strtotime($u['criado_em']) >= strtotime('-30 days')));
+        
+            View::render('usuarios/index', [
+                'usuarios' => $usuarios,
+                'resumo' => [
+                    'total' => $total,
+                    'ativos' => $ativos,
+                    'recentes' => $recentes
+                ]
+            ]);
         }
+
         public function create() {
             View::render('usuarios/create');
         }
