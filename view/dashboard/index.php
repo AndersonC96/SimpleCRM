@@ -66,71 +66,49 @@
     </div>
     <div class="columns is-multiline is-variable is-4" id="grid-representantes" style="display: none;">
       <?php foreach ($representantes as $r): ?>
-        <div class="column is-full-mobile is-one-third-tablet is-one-quarter-desktop representante"
-             data-nota="<?= $r['nps'] ?>"
-             data-nome="<?= $r['nome'] ?>"
-             data-respostas="<?= $r['total_respostas'] ?>"
-             data-area="<?= $r['area_atuacao'] ?>">
-          <div class="box has-text-centered fade-in">
-            <figure class="image is-96x96 is-inline-block mb-3">
-              <img class="is-rounded" src="<?= $r['imagem_url'] ?? 'public/img/avatar.jpg' ?>" alt="Foto de <?= $r['nome'] ?>" onerror="this.onerror=null;this.src='public/img/avatar.jpg';">
-            </figure>
-            <h3 class="title is-6"><?= $r['nome'] ?></h3>
-            <span class="tag is-medium 
-              <?= $r['nps'] >= 9 ? 'is-success' : ($r['nps'] >= 7 ? 'is-warning' : 'is-danger') ?>
-              has-tooltip-bottom"
-              data-tooltip="Últimos 3 meses: 8.8 → 9.1 → <?= $r['nps'] ?>">
-              <?= $r['nps'] ?> <i class="fas fa-arrow-right"></i>
-            </span>
-            <p class="is-size-7 mt-1">Taxa: <?= $r['total_respostas'] ?> respostas</p>
-          </div>
+      <div class="column is-full-mobile is-one-third-tablet is-one-quarter-desktop representante" data-nota="<?= $r['nps'] ?>" data-nome="<?= $r['nome'] ?>" data-respostas="<?= $r['total_respostas'] ?>" data-area="<?= $r['area_atuacao'] ?>">
+        <div class="box has-text-centered fade-in">
+          <figure class="image is-96x96 is-inline-block mb-3">
+            <img class="is-rounded" src="<?= $r['imagem_url'] ?? 'public/img/avatar.jpg' ?>" alt="Foto de <?= $r['nome'] ?>" onerror="this.onerror=null;this.src='public/img/avatar.jpg';">
+          </figure>
+          <h3 class="title is-6"><?= $r['nome'] ?></h3>
+          <span class="tag is-medium <?= $r['nps'] >= 9 ? 'is-success' : ($r['nps'] >= 7 ? 'is-warning' : 'is-danger') ?> has-tooltip-bottom" data-tooltip="Últimos 3 meses: 8.8 → 9.1 → <?= $r['nps'] ?>">
+            <?= $r['nps'] ?> <i class="fas fa-arrow-right"></i>
+          </span>
+          <p class="is-size-7 mt-1">Taxa: <?= $r['total_respostas'] ?> respostas</p>
         </div>
+      </div>
       <?php endforeach; ?>
     </div>
   </div>
-  <!-- Métricas de Engajamento -->
+  <?php
+    $enviadas = $resumo['total']['total_enviados'] ?? 0;
+    $respondidas = $resumo['total']['total_respondidos'] ?? 0;
+    $taxa = $enviadas > 0 ? round(($respondidas / $enviadas) * 100, 1) : 0;
+  ?>
   <div class="box mt-5">
     <h2 class="subtitle is-5">Engajamento</h2>
     <div class="columns">
       <!-- Barra dupla: Enviadas vs Respondidas -->
-      <!--<div class="column is-half">
+      <div class="column is-half">
         <div class="mb-4">
-          <p class="mb-1">Mensagens enviadas: <strong>1.200</strong></p>
-          <progress class="progress is-info" value="100" max="100">100%</progress>
-          <p class="mb-1">Mensagens respondidas: <strong>880</strong></p>
-          <progress class="progress is-success" value="73" max="100">73%</progress>
-          <p class="is-size-7 has-text-grey mt-2">Taxa de conversão: <strong>73.3%</strong></p>
+          <p class="mb-1">Mensagens enviadas: <strong><?= number_format($enviadas, 0, ',', '.') ?></strong></p>
+          <progress class="progress is-info" value="100" max="100"></progress>
+          <p class="mb-1">Mensagens respondidas: <strong><?= number_format($respondidas, 0, ',', '.') ?></strong></p>
+          <progress class="progress is-success" value="<?= $taxa ?>" max="100"><?= $taxa ?>%</progress>
+          <p class="is-size-7 has-text-grey mt-2">Taxa de conversão: <strong><?= $taxa ?>%</strong></p>
         </div>
         <div class="columns is-mobile is-multiline mt-3">
-          <div class="column is-half">
-            <p class="has-text-weight-semibold is-size-7">WhatsApp</p>
-            <progress class="progress is-success is-small" value="600" max="800"></progress>
-          </div>
-          <div class="column is-half">
-            <p class="has-text-weight-semibold is-size-7">Email</p>
-            <progress class="progress is-warning is-small" value="280" max="400"></progress>
+          <!-- Sem canal específico, removido -->
+          <div class="column is-full">
+            <p class="is-size-7 has-text-grey">Fonte de dados: Base de envios e respostas NPS</p>
           </div>
         </div>
-      </div>-->
+      </div>
       <!-- Gráfico de linhas -->
-      <!--<div class="column is-half">
+      <div class="column is-half">
         <div id="engajamentoChart"></div>
-      </div>-->
-
-      <?php
-  $enviadas = $resumo['total']['total_enviados'] ?? 0;
-  $respondidas = $resumo['total']['total_respondidos'] ?? 0;
-  $taxa = $enviadas > 0 ? round(($respondidas / $enviadas) * 100, 1) : 0;
-?>
-<p class="mb-1">Mensagens enviadas: <strong><?= number_format($enviadas, 0, ',', '.') ?></strong></p>
-<progress class="progress is-info" value="100" max="100"></progress>
-
-<p class="mb-1">Mensagens respondidas: <strong><?= number_format($respondidas, 0, ',', '.') ?></strong></p>
-<progress class="progress is-success" value="<?= $taxa ?>" max="100"><?= $taxa ?>%</progress>
-
-<p class="is-size-7 has-text-grey mt-2">Taxa de conversão: <strong><?= $taxa ?>%</strong></p>
-
-
+      </div>
     </div>
   </div>
 </section>
@@ -150,6 +128,7 @@
   }
   function renderNPSChart() {
     const colors = getThemeColors();
+    const valorNPS = <?= $mediaNPS ?>;
     new ApexCharts(document.querySelector("#npsChart"), {
       chart: {
         type: 'radialBar',
@@ -162,18 +141,35 @@
         radialBar: {
           startAngle: -90,
           endAngle: 90,
-          hollow: { size: '70%' },
+          hollow: {
+            size: '70%'
+          },
+          track: {
+            background: '#f0f0f0',
+            strokeWidth: '97%',
+          },
           dataLabels: {
-            value: { fontSize: '30px' }
+            name: {
+              show: false
+            },
+            value: {
+              fontSize: '28px',
+              formatter: function (val) {
+                return Math.round(val) + '%';
+              }
+            }
           }
         }
       },
-      series: [68],
+      series: [valorNPS],
+      labels: ['NPS'],
       colors: [colors.green]
     }).render();
   }
   function renderEngajamentoChart() {
     const colors = getThemeColors();
+    const respostaData = <?= json_encode(array_values($respostasSemana)) ?>;
+    const labels = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
     new ApexCharts(document.querySelector("#engajamentoChart"), {
       chart: {
         type: 'line',
@@ -184,9 +180,9 @@
       },
       series: [{
         name: 'Respostas',
-        data: [120, 180, 150, 210, 190, 250, 300]
+        data: respostaData
       }],
-      xaxis: { categories: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'] },
+      xaxis: { categories: labels },
       colors: [colors.blue],
       stroke: { width: 3, curve: 'smooth' },
       markers: { size: 4 }
