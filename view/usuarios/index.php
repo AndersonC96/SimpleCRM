@@ -1,78 +1,61 @@
 <?php include 'view/partials/header.php'; ?>
 <section class="section">
-  <div class="columns is-multiline">
-    <!-- Card Total -->
-    <div class="column is-one-third">
-      <div class="box has-text-centered">
-        <p class="heading">Total de Usuários</p>
-        <p class="title"><?= $totalUsuarios ?></p>
+  <div class="container">
+    <h1 class="title is-4">Gestão de Usuários</h1>
+    <!-- Cards de Resumo -->
+    <div class="columns is-multiline mb-5">
+      <div class="column is-one-third">
+        <div class="box has-text-centered">
+          <p class="heading">Total de Usuários</p>
+          <p class="title"><?= $resumo['total'] ?></p>
+        </div>
+      </div>
+      <div class="column is-one-third">
+        <div class="box has-text-centered">
+          <p class="heading">Usuários Ativos</p>
+          <p class="title has-text-success"><?= $resumo['ativos'] ?></p>
+        </div>
+      </div>
+      <div class="column is-one-third">
+        <div class="box has-text-centered">
+          <p class="heading">Novos (últimos 30 dias)</p>
+          <p class="title has-text-info"><?= $resumo['recentes'] ?></p>
+        </div>
       </div>
     </div>
-
-    <!-- Card Ativos -->
-    <div class="column is-one-third">
-      <div class="box has-text-centered has-text-success">
-        <p class="heading">Ativos</p>
-        <p class="title"><?= $usuariosAtivos ?></p>
-      </div>
-    </div>
-
-    <!-- Card Novos (últimos 30 dias) -->
-    <div class="column is-one-third">
-      <div class="box has-text-centered has-text-info">
-        <p class="heading">Novos (30 dias)</p>
-        <p class="title"><?= $novosUsuarios ?></p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Filtro e busca -->
-  <form method="get" class="field has-addons mb-4">
-    <div class="control is-expanded">
-      <input type="text" class="input" name="busca" placeholder="Buscar por nome ou e-mail..." value="<?= $_GET['busca'] ?? '' ?>">
-    </div>
-    <div class="control">
-      <button type="submit" class="button is-info">Buscar</button>
-    </div>
-  </form>
-
-  <!-- Tabela de usuários -->
-  <div class="table-container">
-    <table class="table is-fullwidth is-hoverable is-bordered">
+    <!-- Tabela de Usuários -->
+    <table class="table is-striped is-hoverable is-fullwidth">
       <thead>
         <tr>
-          <th>Avatar</th>
           <th>Nome</th>
-          <th>E-mail</th>
+          <th>Email</th>
+          <th>Tipo</th>
           <th>Status</th>
-          <th>Cadastro</th>
+          <th>Criado em</th>
           <th>Ações</th>
         </tr>
       </thead>
       <tbody>
         <?php foreach ($usuarios as $usuario): ?>
           <tr>
-            <td>
-              <figure class="image is-32x32 is-rounded">
-                <img class="is-rounded" src="<?= $usuario['avatar'] ?: 'public/img/avatar.jpg' ?>" alt="Avatar" onerror="this.onerror=null;this.src='public/img/avatar.jpg'">
-              </figure>
-            </td>
             <td><?= htmlspecialchars($usuario['nome']) ?></td>
             <td><?= htmlspecialchars($usuario['email']) ?></td>
+            <td><?= ucfirst($usuario['tipo']) ?></td>
             <td>
-              <span class="tag <?= $usuario['ativo'] ? 'is-success' : 'is-danger' ?>">
+              <span class="tag is-<?= $usuario['ativo'] ? 'success' : 'danger' ?>">
                 <?= $usuario['ativo'] ? 'Ativo' : 'Inativo' ?>
               </span>
             </td>
             <td><?= date('d/m/Y', strtotime($usuario['criado_em'])) ?></td>
             <td>
-              <a href="index.php?url=usuarios/editar&id=<?= $usuario['id'] ?>" class="button is-small is-light is-info">Editar</a>
-              <a href="index.php?url=usuarios/deletar&id=<?= $usuario['id'] ?>" class="button is-small is-light is-danger">Excluir</a>
+              <a href="index.php?url=usuarios/edit&id=<?= $usuario['id'] ?>" class="button is-small is-info">Editar</a>
+              <a href="index.php?url=usuarios/delete&id=<?= $usuario['id'] ?>" class="button is-small is-danger" onclick="return confirm('Excluir este usuário?')">Excluir</a>
             </td>
           </tr>
         <?php endforeach; ?>
       </tbody>
     </table>
+    <a href="index.php?url=usuarios/create" class="button is-primary mt-4">Novo Usuário</a>
   </div>
 </section>
 <?php include 'view/partials/footer.php'; ?>
