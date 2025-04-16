@@ -29,4 +29,12 @@
     $router->get('dashboard', 'DashboardController@index');
     // Rota dinâmica por parâmetro (?url=rota)
     $url = $_GET['url'] ?? '';
+    //$router->run($url);
+    $routes = require __DIR__ . '/config/routes.php';
+    foreach ($routes['GET'] as $path => $handler) {
+        $router->get($path, $handler);
+    }
+    foreach ($routes['POST'] as $path => $handler) {
+        $router->post($path, $handler);
+    }
     $router->run($url);
