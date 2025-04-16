@@ -3,9 +3,8 @@
     use App\Core\View;
     use App\Config\Database;
     class UsuarioController {
-        private PDO $pdo;
+        private \PDO $pdo;
         public function __construct() {
-            session_start();
             if (!isset($_SESSION['usuario']) || $_SESSION['usuario']['tipo'] !== 'admin') {
                 header("Location: index.php?url=login");
                 exit;
