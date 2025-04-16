@@ -3,7 +3,8 @@
     use App\Core\Database;
     class EngajamentoRepository {
         public static function obterResumo(): array {
-            $pdo = Database::connect();
+            //$pdo = Database::connect();
+            $pdo = Database::getInstance();
             // Total de envios que saíram da fila (status ≠ pendente)
             $totais = $pdo->query("SELECT COUNT(*) AS total_enviados FROM campanha_clientes WHERE status != 'pendente'")->fetch(\PDO::FETCH_ASSOC);
             // Total de respostas reais (baseadas na tabela de resposta)
@@ -16,7 +17,8 @@
             ];
         }
         public static function respostasPorDia(): array {
-            $pdo = Database::connect();
+            //$pdo = Database::connect();
+            $pdo = Database::getInstance();
             $stmt = $pdo->query("SELECT DAYNAME(data_resposta) AS dia, COUNT(*) AS total FROM nps_respostas WHERE data_resposta IS NOT NULL GROUP BY DAYOFWEEK(data_resposta)");
             $dias = [
                 'Monday' => 0, 'Tuesday' => 1, 'Wednesday' => 2, 'Thursday' => 3, 'Friday' => 4, 'Saturday' => 5, 'Sunday' => 6
