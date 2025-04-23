@@ -47,7 +47,7 @@
             View::render('usuarios/create', [
                 'csrf_token' => $csrf_token
             ]);
-        }
+        } 
 
         public function store() {
             $nome = trim($_POST['nome'] ?? '');
@@ -55,6 +55,23 @@
             $senha = $_POST['senha'] ?? '';
             $tipo = $_POST['tipo'] ?? 'operador';
             $ativo = isset($_POST['ativo']) ? 1 : 0;
+            $avatarPath = null;
+            if (!empty($_FILES['avatar']['tmp_name'])) {
+                $ext = pathinfo($_FILES['avatar']['name'], PATHINFO_EXTENSION);
+                $filename = uniqid('avatar_') . '.' . $ext;
+                $destino = 'public/uploads/avatars/' . $filename;
+                // Cria o diretório se não existir
+                if (!is_dir('public/uploads/avatars')) {
+                    mkdir('public/uploads/avatars', 0755, true);
+                }
+                if (move_uploaded_file($_FILES['avatar']['tmp_name'], $destino)) {
+                    $avatarPath = $destino;
+                }
+            }
+            if ($_POST['csrf_token'] !== ($_SESSION['csrf_token'] ?? '')) {
+                die('CSRF token inválido.');
+            }
+            unset($_SESSION['csrf_token']);
             if (!$nome || !$email || strlen($senha) < 6) {
                 echo "Dados inválidos.";
                 return;
@@ -67,11 +84,12 @@
                 return;
             }
             // Insere no banco
-            $stmt = $this->pdo->prepare("INSERT INTO users (nome, email, senha, tipo, ativo) VALUES (:nome, :email, :senha, :tipo, :ativo)");
+            $stmt = $this->pdo->prepare("INSERT INTO users (nome, email, senha, avatar, tipo, ativo) VALUES (:nome, :email, :senha, :avatar, :tipo, :ativo)");
             $stmt->execute([
                 'nome' => $nome,
                 'email' => $email,
                 'senha' => password_hash($senha, PASSWORD_DEFAULT),
+                'avatar' => $avatarPath,
                 'tipo' => $tipo,
                 'ativo' => $ativo
             ]);
@@ -92,7 +110,7 @@
             }
             View::render('usuarios/edit', ['usuario' => $usuario]);
         }
-        public function update() {
+        /*public function update() {
             $id = $_POST['id'] ?? null;
             $nome = trim($_POST['nome'] ?? '');
             $email = filter_var($_POST['email'] ?? '', FILTER_VALIDATE_EMAIL);
@@ -112,7 +130,58 @@
                 'id' => $id
             ]);
             header("Location: index.php?url=usuarios");
+        }*/
+        public function update() {
+            $id = $_POST['id'] ?? null;
+            $nome = trim($_POST['nome'] ?? '');
+            $email = filter_var($_POST['email'] ?? '', FILTER_VALIDATE_EMAIL);
+            $tipo = $_POST['tipo'] ?? 'operador';
+            $ativo = isset($_POST['ativo']) ? 1 : 0;
+        
+            if (!$id || !$nome || !$email) {
+                echo "Dados inválidos.";
+                return;
+            }
+        
+            // Lógica para upload da imagem (se enviada)
+            $avatarPath = null;
+            if (!empty($_FILES['avatar']['name'])) {
+                $uploadDir = 'public/uploads/avatars/';
+                if (!is_dir($uploadDir)) {
+                    mkdir($uploadDir, 0755, true);
+                }
+                $ext = pathinfo($_FILES['avatar']['name'], PATHINFO_EXTENSION);
+                $filename = uniqid('avatar_') . '.' . $ext;
+                $path = $uploadDir . $filename;
+        
+                if (move_uploaded_file($_FILES['avatar']['tmp_name'], $path)) {
+                    $avatarPath = $path;
+                }
+            }
+        
+            // Atualiza os dados do usuário
+            $sql = "UPDATE users SET nome = :nome, email = :email, tipo = :tipo, ativo = :ativo";
+            $params = [
+                'nome' => $nome,
+                'email' => $email,
+                'tipo' => $tipo,
+                'ativo' => $ativo,
+                'id' => $id
+            ];
+        
+            // Se nova imagem foi enviada, inclui no update
+            if ($avatarPath) {
+                $sql .= ", avatar = :avatar";
+                $params['avatar'] = $avatarPath;
+            }
+        
+            $sql .= " WHERE id = :id";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute($params);
+        
+            header("Location: index.php?url=usuarios");
         }
+        
         public function delete() {
             $id = $_GET['id'] ?? null;
             if (!$id) {

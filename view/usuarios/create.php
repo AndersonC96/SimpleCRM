@@ -1,6 +1,7 @@
 <?php include 'view/partials/header.php'; ?>
 <h2 class="title is-4">Novo Usuário</h2>
-<form method="POST" action="index.php?url=usuarios/store">
+<form action="index.php?url=usuarios/store" method="POST" enctype="multipart/form-data">
+<input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
   <div class="field">
     <label class="label">Nome</label>
     <div class="control">
@@ -19,13 +20,23 @@
       <input class="input" type="password" name="senha" required minlength="6">
     </div>
   </div>
+  <!-- Campo de Avatar -->
+  <div class="field">
+    <label class="label">Foto de Perfil</label>
+    <div class="control">
+      <input type="file" name="avatar" accept="image/*" onchange="previewAvatar(this)" class="input">
+    </div>
+    <figure class="image is-128x128 mt-2">
+      <img id="avatarPreview" src="public/img/avatar.jpg" class="is-rounded">
+    </figure>
+  </div>
   <div class="field">
     <label class="label">Tipo</label>
     <div class="control">
       <div class="select">
         <select name="tipo" required>
-          <option value="operador">Operador</option>
-          <option value="representante">Representante</option>
+          <!--<option value="operador">Operador</option>
+          <option value="representante">Representante</option>-->
           <option value="admin">Administrador</option>
         </select>
       </div>
